@@ -9,7 +9,7 @@ breed [embers ember]  ;; turtles gradually fading from red to near black
 breed [planes plane] ;; planes that will fly over the forest setting out fire
 
 planes-own [
-  num-trials
+  tank
   found-fire?
 ]
 
@@ -44,7 +44,7 @@ to setup
     set size 10
     set color yellow
     set heading 270 ;;Face all planes to left, where the fire starts
-    set num-trials 0
+    set tank airplanes-tank-capacity
     set found-fire? false
   ]
 
@@ -88,7 +88,7 @@ end
 to move-planes
   ask planes
   [
-    repeat plane-capacity
+    repeat airplanes-tank-capacity
     [
 
     ifelse can-move? 1 [
@@ -109,12 +109,9 @@ if nearest-fire != nobody
         ;set heading heading + 180
         fd 1
     ]
-    if found-fire? [
-      set num-trials num-trials + 1
-    ]
     ]
 
-    if num-trials > plane-capacity [
+    if tank = 0 [
 
     set xcor max-pxcor
       set heading 270 ;;Face all planes to left, where the fire starts
@@ -123,7 +120,6 @@ if nearest-fire != nobody
     [
       set heading towards nearest-fire
   ]
-    set num-trials 0
     set found-fire? false
    ]
 
@@ -134,18 +130,19 @@ end
 
 ;; Make firefighter plane put out fire in the patch it has found
 to put-out-fires
+  ;;Set the color of the patch where the fire was found to gray and make the fire breed die
   ask other turtles-here
-      [ set pcolor gray
-        die
-      ]
-      set fires-put-out fires-put-out + 1
-      set num-trials 0
+  [ set pcolor gray
+    die
+  ]
+
+  set fires-put-out fires-put-out + 1 ;; Increment monitor counter
       set found-fire? true
 
   let nearest-fire min-one-of fires [distance myself]
-if nearest-fire != nobody
-    [
-      set heading towards nearest-fire
+  if nearest-fire != nobody
+  [
+    set heading towards nearest-fire
   ]
 
 end
@@ -201,7 +198,7 @@ density
 density
 0.0
 99.0
-71.0
+96.0
 1.0
 1
 %
@@ -250,7 +247,7 @@ num-planes
 num-planes
 0
 100
-6.0
+1.0
 1
 1
 NIL
@@ -263,20 +260,20 @@ SWITCH
 280
 distribute-planes-randomly?
 distribute-planes-randomly?
-1
+0
 1
 -1000
 
 SLIDER
 65
 318
-237
+244
 351
-plane-capacity
-plane-capacity
+airplanes-tank-capacity
+airplanes-tank-capacity
 0
 100
-6.0
+15.0
 1
 1
 NIL
