@@ -10,7 +10,6 @@ breed [planes plane] ;; planes that will fly over the forest setting out fire
 
 planes-own [
   tank
-  found-fire?
 ]
 
 to setup
@@ -45,7 +44,6 @@ to setup
     set color yellow
     set heading 270 ;;Face all planes to left, where the fire starts
     set tank airplanes-tank-capacity
-    set found-fire? false
   ]
 
   reset-ticks
@@ -88,63 +86,67 @@ end
 to move-planes
   ask planes
   [
-    repeat airplanes-tank-capacity
-    [
 
-    ifelse can-move? 1 [
-    ifelse not any? fires-on patch-ahead 1 and not any? embers-on patch-ahead 1
-      [fd 1]
-      [fd 1
-          put-out-fires]
-
-        ;set heading heading + 90
-        ;fd 1]
-    ]
-    [
-                let nearest-fire min-one-of fires [distance myself]
-if nearest-fire != nobody
-    [
-      set heading towards nearest-fire
-  ]
-        ;set heading heading + 180
-        fd 1
-    ]
-    ]
-
+     ;; If airplane tank is empty go back to the
     if tank = 0 [
 
     set xcor max-pxcor
-      set heading 270 ;;Face all planes to left, where the fire starts
-        let nearest-fire min-one-of fires [distance myself]
-if nearest-fire != nobody
-    [
-      set heading towards nearest-fire
-  ]
-    set found-fire? false
+    set heading 270 ;;Face all planes to left, where the fire starts
+    ;let nearest-fire min-one-of fires [distance myself]
+    ;if nearest-fire != nobody
+   ; [
+     ; set heading towards nearest-fire
+  ;]
+    set tank airplanes-tank-capacity
    ]
 
+    let nearest-fire min-one-of fires [distance myself]
+      if nearest-fire != nobody
+      [
+        set heading towards nearest-fire
+      ]
 
+    ;;Check if the plane can move
+    ifelse can-move? 1 [
+      ifelse not any? fires-on patch-ahead 1 and not any? embers-on patch-ahead 1
+      [fd 1] ;; In case there is no fire ahead, keep searching
+      [fd 1 ;;Put out the fire ahead
+       put-out-fires
+      ]
+    ]
+    [
+      ;;
+      ;let nearest-fire min-one-of fires [distance myself]
+      ;if nearest-fire != nobody
+      ;[
+      ;  set heading towards nearest-fire
+      ;]
+      fd 1
+    ]
 
   ]
 end
 
 ;; Make firefighter plane put out fire in the patch it has found
 to put-out-fires
-  ;;Set the color of the patch where the fire was found to gray and make the fire breed die
-  ask other turtles-here
-  [ set pcolor gray
-    die
+
+  while [tank > 0] [
+    ;;Set the color of the patch where the fire was found to gray and make the fire breed die
+    ask other turtles-here
+    [ set pcolor gray
+      die
+    ]
+
+    set fires-put-out fires-put-out + 1 ;; Increment monitor counter
+    set tank tank - 1 ;; Update airplane tank
+
+    ;; Go to the nearest fire
+    let nearest-fire min-one-of fires [distance myself]
+    if nearest-fire != nobody
+    [
+      move-to nearest-fire
+    ]
   ]
-
-  set fires-put-out fires-put-out + 1 ;; Increment monitor counter
-      set found-fire? true
-
-  let nearest-fire min-one-of fires [distance myself]
-  if nearest-fire != nobody
-  [
-    set heading towards nearest-fire
-  ]
-
 end
 
 
@@ -198,7 +200,7 @@ density
 density
 0.0
 99.0
-96.0
+70.0
 1.0
 1
 %
@@ -247,7 +249,7 @@ num-planes
 num-planes
 0
 100
-1.0
+2.0
 1
 1
 NIL
@@ -273,7 +275,7 @@ airplanes-tank-capacity
 airplanes-tank-capacity
 0
 100
-15.0
+30.0
 1
 1
 NIL
