@@ -43,7 +43,7 @@ to setup
     set size 10
     set color yellow
     set heading 270 ;;Face all planes to left, where the fire starts
-    set tank airplanes-tank-capacity
+    set tank planes-tank-capacity
   ]
 
   reset-ticks
@@ -86,42 +86,27 @@ end
 to move-planes
   ask planes
   [
+    ;; If airplane tank is empty go back to the max x to simulate recharge
 
-     ;; If airplane tank is empty go back to the
     if tank = 0 [
-
-    set xcor max-pxcor
-    set heading 270 ;;Face all planes to left, where the fire starts
-    ;let nearest-fire min-one-of fires [distance myself]
-    ;if nearest-fire != nobody
-   ; [
-     ; set heading towards nearest-fire
-  ;]
-    set tank airplanes-tank-capacity
-   ]
+      set xcor max-pxcor
+      set heading 270 ;;Face all planes to left, where the fire starts
+      set tank planes-tank-capacity
+    ]
 
     let nearest-fire min-one-of fires [distance myself]
-      if nearest-fire != nobody
-      [
-        set heading towards nearest-fire
-      ]
+    if nearest-fire != nobody
+    [
+      face nearest-fire
+    ]
 
     ;;Check if the plane can move
-    ifelse can-move? 1 [
+    if can-move? 1 [
       ifelse not any? fires-on patch-ahead 1 and not any? embers-on patch-ahead 1
       [fd 1] ;; In case there is no fire ahead, keep searching
       [fd 1 ;;Put out the fire ahead
        put-out-fires
       ]
-    ]
-    [
-      ;;
-      ;let nearest-fire min-one-of fires [distance myself]
-      ;if nearest-fire != nobody
-      ;[
-      ;  set heading towards nearest-fire
-      ;]
-      fd 1
     ]
 
   ]
@@ -150,7 +135,7 @@ to put-out-fires
 end
 
 
-; Copyright 1997 Uri Wilensky.
+; Copyright 1997 Uri Wilensky. Modified by Nelton Santos in 2024 to add firefighting planes
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -181,10 +166,10 @@ ticks
 30.0
 
 MONITOR
-43
-131
-158
-176
+18
+272
+133
+317
 percent burned
 (burned-trees / initial-trees)\n* 100
 1
@@ -192,25 +177,25 @@ percent burned
 11
 
 SLIDER
-5
-38
-190
-71
+16
+26
+201
+59
 density
 density
 0.0
 99.0
-70.0
+99.0
 1.0
 1
 %
 HORIZONTAL
 
 BUTTON
-106
-79
-175
-115
+97
+219
+166
+255
 go
 go
 T
@@ -224,10 +209,10 @@ NIL
 0
 
 BUTTON
-26
-79
-96
-115
+17
+219
+87
+255
 setup
 setup
 NIL
@@ -241,51 +226,51 @@ NIL
 1
 
 SLIDER
-13
-200
-185
-233
+16
+78
+188
+111
 num-planes
 num-planes
 0
 100
-2.0
+4.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-10
-247
-243
-280
+15
+167
+248
+200
 distribute-planes-randomly?
 distribute-planes-randomly?
-0
+1
 1
 -1000
 
 SLIDER
-65
-318
-244
-351
-airplanes-tank-capacity
-airplanes-tank-capacity
+14
+122
+193
+155
+planes-tank-capacity
+planes-tank-capacity
 0
 100
-30.0
+40.0
 1
 1
 NIL
 HORIZONTAL
 
 MONITOR
-33
-416
-171
-461
+152
+274
+290
+319
 fires put out by planes
 fires-put-out
 17
