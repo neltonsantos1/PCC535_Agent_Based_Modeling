@@ -86,14 +86,15 @@ end
 to move-planes
   ask planes
   [
-    ;; If airplane tank is empty go back to the max x to simulate recharge
 
+    ;; If airplane tank is empty go back to the max x to simulate recharge
     if tank = 0 [
       set xcor max-pxcor
       set heading 270 ;;Face all planes to left, where the fire starts
       set tank planes-tank-capacity
     ]
 
+    ;; Find the nearest fire to head towards
     let nearest-fire min-one-of fires [distance myself]
     if nearest-fire != nobody
     [
@@ -185,7 +186,7 @@ density
 density
 0.0
 99.0
-99.0
+76.0
 1.0
 1
 %
