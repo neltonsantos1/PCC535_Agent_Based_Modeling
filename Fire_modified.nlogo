@@ -281,13 +281,16 @@ fires-put-out
 @#$#@#$#@
 ## WHAT IS IT?
 
-This project simulates the spread of a fire through a forest.  It shows that the fire's chance of reaching the right edge of the forest depends critically on the density of trees. This is an example of a common feature of complex systems, the presence of a non-linear threshold or critical parameter.
+This project is a modification to the fire model that exists in NetLogo Examples Library. So most of the text here in the info will be from the original documentation written by Wilensky (1997) and I am modifying only where it is necessary to detail the changes. The fire model simulates the spread of a fire through a forest. It shows that the fire's chance of reaching the right edge of the forest depends critically on the density of trees. This is an example of a common feature of complex systems, the presence of a non-linear threshold or critical parameter. The modification introduced was to add aerial firefighting that flies over the forest and puts out fires. 
 
 ## HOW IT WORKS
 
 The fire starts on the left edge of the forest, and spreads to neighboring trees. The fire spreads in four directions: north, east, south, and west.
 
-The model assumes there is no wind.  So, the fire must have trees along its path in order to advance.  That is, the fire cannot skip over an unwooded area (patch), so such a patch blocks the fire's motion in that direction.
+The model assumes there is no wind.  So, the fire must have trees along its path in order to advance.  That is, the fire cannot skip over an unwooded area (patch), so such a patch blocks the fire's motion in that direction. 
+
+The planes can start at the right edge of the forest or at random places if the distribute-planes-randomly? switch is on. The planes head towards the nearest fire and keep going forward at each tick until it reaches a fire. Then it puts out that fire and the next ones near it until its tank is empty. This way, the fire dies and cannot reach the other trees near that fire. The patch where the fire was is colored gray to differentiate it from the embers. Then, to simulate it going back to recharge, the plane is positioned again in the max x coordinate of the world and starts again the same behavior. 
+
 
 ## HOW TO USE IT
 
@@ -297,11 +300,20 @@ Click the GO button to start the simulation.
 
 The DENSITY slider controls the density of trees in the forest. (Note: Changes in the DENSITY slider do not take effect until the next SETUP.)
 
+The NUM-PLANES sliders controls the number of planes that will exist in the simulation. (Note: If the number of planes is set to zero, the simulation works just like the original fire model.)
+
+The PLANES-TANK-CAPACITY slider controls the water or fire-retardant capacity of the firefighting planes. In the model, it says how many fires a plane can put out before it has to go back to recharge the tank.
+
+The DISTRIBUTE-PLANES-RANDOMLY? switch controls if the planes will start at random places in the forest or will start from the right edge of the world.
+
+
 ## THINGS TO NOTICE
 
 When you run the model, how much of the forest burns. If you run it again with the same settings, do the same trees burn? How similar is the burn from run to run?
 
 Each turtle that represents a piece of the fire is born and then dies without ever moving. If the fire is made of turtles but no turtles are moving, what does it mean to say that the fire moves? This is an example of different levels in a system: at the level of the individual turtles, there is no motion, but at the level of the turtles collectively over time, the fire moves.
+
+When you run the model with the same density but add more planes, how does it affect the area burned?
 
 ## THINGS TO TRY
 
@@ -310,6 +322,10 @@ Set the density of trees to 55%. At this setting, there is virtually no chance t
 Try setting up and running a BehaviorSpace experiment (see Tools menu) to analyze the percent burned at different tree density levels. Plot the burn-percentage against the density. What kind of curve do you get?
 
 Try changing the size of the lattice (`max-pxcor` and `max-pycor` in the Model Settings). Does it change the burn behavior of the fire?
+
+Try having more planes with a smaller tanks, or fewer planes with bigger tanks. Does this make a difference? 
+
+Try changing where the planes start. If they all start at the right edge, how does that differ when they start at random places? How many planes or tank capacity are necessary to put out all the fire at once?  
 
 ## EXTENDING THE MODEL
 
@@ -659,6 +675,32 @@ setup
 repeat 180 [ go ]
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="Num-Planes Variation" repetitions="10" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>(burned-trees / initial-trees) * 100</metric>
+    <metric>fires-put-out</metric>
+    <runMetricsCondition>not any? fires and not any? embers</runMetricsCondition>
+    <enumeratedValueSet variable="density">
+      <value value="76"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="planes-tank-capacity">
+      <value value="40"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-planes">
+      <value value="0"/>
+      <value value="1"/>
+      <value value="2"/>
+      <value value="3"/>
+      <value value="4"/>
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distribute-planes-randomly?">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
